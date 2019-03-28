@@ -2,28 +2,25 @@
 """
 Created on Tue Mar 26 14:02:03 2019
 
-@author: James
+@author: Kim LeBlanc
 """
 
 import pandas as pd
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
-
-
 BestMatches_DtoR_array=[]
 BestMatches_RtoD_array=[]
 
-
 def match_names_DtoR(DAIC_IDs,All_Rutgers_IDs):
-    for row in DAIC_IDs:
-        x=process.extract(row, All_Rutgers_IDs)
+    for GUID in DAIC_IDs:
+        x=process.extract(GUID, All_Rutgers_IDs)
         BestMatches_DtoR_array.append(x)
     return BestMatches_DtoR_array
 
 def match_names_RtoD(Rutgers_IDs,All_DAIC_IDs):
-    for row in Rutgers_IDs:
-        x=process.extract(row, All_DAIC_IDs)
+    for GUID in Rutgers_IDs:
+        x=process.extract(GUID, All_DAIC_IDs)
         BestMatches_RtoD_array.append(x)
     return BestMatches_RtoD_array
  
@@ -31,8 +28,8 @@ df = pd.read_csv("pGUID_Matching.csv", engine='python')
 
 #datasets
 
-Unique_DAIC_IDs = df['UniqueDAIC'].dropna().head(10)
-Unique_Rutgers_IDs = df['UniqueRutgers'].dropna().head(10)
+Unique_DAIC_IDs = df['UniqueDAIC'].dropna()
+Unique_Rutgers_IDs = df['UniqueRutgers'].dropna()
 AllRutgersIDs = df['AllRutgers'].dropna()
 AllDAIC_IDs = df['AllDAIC']
  
