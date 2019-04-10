@@ -19,11 +19,13 @@ def match2Lists(list1,list2):
     """
     TopMatch = []
     TopScore = []
+    TopRowIdx = []
     for member in list1:
         x=process.extractOne(member, list2)
         TopMatch.append(x[0])
         TopScore.append(x[1])
-    return TopMatch, TopScore
+        TopRowIdx.append(x[2])
+    return TopMatch, TopScore, TopRowIdx
 
 df = pd.read_excel("ABCD_MasterList_pGUIDs_RUIDs.xlsx")
 print ('Finished reading in input file.')
@@ -41,16 +43,26 @@ AllDAIC_IDs = df['pGUID_DAIC']
 
 
 print ('About to start first match2collections.') 
-BestMatch_DtoR, BestScore_DtoR = match2Lists(Unique_DAIC_IDs,AllRutgersIDs)
+BestMatch_DtoR, BestScore_DtoR, BestRowIdx_DtoR = match2Lists(Unique_DAIC_IDs,AllRutgersIDs)
 print ('Just finished first match2collections.') 
 print ('About to start second match2collections.') 
-BestMatch_RtoD, BestScore_RtoD = match2Lists(Unique_Rutgers_IDs, AllDAIC_IDs)
+BestMatch_RtoD, BestScore_RtoD, BestRowIdx_RtoD = match2Lists(Unique_Rutgers_IDs, AllDAIC_IDs)
 print ('Just finished second match2collections.') 
  
 df['BestMatchdf_DtoR']=pd.Series(BestMatch_DtoR)
 df['BestScoredf_DtoR']=pd.Series(BestScore_DtoR)
 df['BestMatchdf_RtoD']=pd.Series(BestMatch_RtoD)
 df['BestScoredf_RtoD']=pd.Series(BestScore_RtoD)
+df['BestRowIdxdf_DtoR']=pd.Series(BestRowIdx_DtoR)
+df['BestRowIdxdf_RtoD']=pd.Series(BestRowIdx_RtoD)
+
+RUID_DtoR_List = []
+for rowIdx in BestRowIdx_DtoR:
+    #workingRUID=df['RUID_Rutgers'].toList()[rowIdx]
+    workingRUID=df['RUID_Rutgers'].iloc[rowIdx]
+    RUID_DtoR_List.append(workingRUID)
+
+df['RUID_DtoR']=pd.Series(RUID_DtoR_List)
  
 writer = pd.ExcelWriter('FuzzyMatchedIDsOne.xlsx')
 df.to_excel(writer,'Sheet1')
