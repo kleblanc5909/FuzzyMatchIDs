@@ -27,6 +27,21 @@ def match2Lists(list1,list2):
         TopRowIdx.append(x[2])
     return TopMatch, TopScore, TopRowIdx
 
+def createRUID_List(rowIdxList, headerStr):
+    """
+    Loops over a series containing row indices and returns a list of RUID strings.
+    Inputs:
+      rowIdxList - collection of row index values 
+      headerStr - DataFrame header string value for column containing RUIDs
+    Outputs:
+      new list containing RUID strings
+    """
+    RUID_List = []
+    for aRowIdx in rowIdxList:
+        workingRUID=df[headerStr].iloc[aRowIdx]
+        RUID_List.append(workingRUID)
+    return RUID_List
+
 df = pd.read_excel("ABCD_MasterList_pGUIDs_RUIDs.xlsx")
 print ('Finished reading in input file.')
 
@@ -56,13 +71,10 @@ df['BestScoredf_RtoD']=pd.Series(BestScore_RtoD)
 df['BestRowIdxdf_DtoR']=pd.Series(BestRowIdx_DtoR)
 df['BestRowIdxdf_RtoD']=pd.Series(BestRowIdx_RtoD)
 
-RUID_DtoR_List = []
-for rowIdx in BestRowIdx_DtoR:
-    #workingRUID=df['RUID_Rutgers'].toList()[rowIdx]
-    workingRUID=df['RUID_Rutgers'].iloc[rowIdx]
-    RUID_DtoR_List.append(workingRUID)
-
+RUID_DtoR_List = createRUID_List(BestRowIdx_DtoR, 'RUID_Rutgers')
 df['RUID_DtoR']=pd.Series(RUID_DtoR_List)
+RUID_RtoD_List = createRUID_List(BestRowIdx_RtoD, 'RUID_DAIC')
+df['RUID_RtoD']=pd.Series(RUID_RtoD_List)
  
 writer = pd.ExcelWriter('FuzzyMatchedIDsOne.xlsx')
 df.to_excel(writer,'Sheet1')
